@@ -24,6 +24,11 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
+# Print model input details for debugging
+print("Model Input Details:")
+print(f"Input Shape: {input_details[0]['shape']}")
+print(f"Input Type: {input_details[0]['dtype']}")
+
 # Load breed labels (you might want to replace this with your actual labels)
 BREED_LABELS = [
     "Abyssinian", "Bengal", "Birman", "Bombay", "British Shorthair",
@@ -40,7 +45,7 @@ BREED_LABELS = [
 def preprocess_image(image_path):
     """Preprocess the image for model input."""
     img = Image.open(image_path).convert('RGB')
-    img = img.resize((224, 224))  # Adjust size according to your model's input requirements
+    img = img.resize((128, 128))  # Changed from 224x224 to 128x128 to match model's expected input
     img_array = np.array(img, dtype=np.float32)
     img_array = img_array / 255.0  # Normalize to [0,1]
     return img_array[np.newaxis, ...]
