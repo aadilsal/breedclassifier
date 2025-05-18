@@ -4,6 +4,8 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import numpy as np
 import tflite_runtime.interpreter as tflite
+import tensorflow as tf
+
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
