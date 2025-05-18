@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Breed Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            // Show loading state
+            loadingDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Update image preview
+                imagePreview.src = data.image_path;
+                imagePreview.classList.remove('hidden');
+                
+                // Update result text
+                document.getElementById('breedName').textContent = data.breed;
+                document.getElementById('confidence').textContent = data.confidence;
+                
+                // Show result
+                resultDiv.classList.remove('hidden');
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            })
+            .finally(() => {
+                loadingDiv.classList.add('hidden');
+            });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Pet Breed Classifier</h1>
+                
+                <form onsubmit="handleSubmit(event)" class="space-y-6">
+                    <div class="flex flex-col items-center space-y-4">
+                        <label for="file" class="w-full">
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                                <span class="text-gray-600">Drop your image here or click to upload</span>
+                            </div>
+                        </label>
+                        <input type="file" id="file" name="file" accept="image/*" onchange="previewImage(event)" class="hidden" required>
+                    </div>
+
+                    <img id="imagePreview" class="hidden mx-auto max-h-64 rounded-lg shadow-md" alt="Preview">
+                    
+                    <div class="flex justify-center">
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                            Classify Pet
+                        </button>
+                    </div>
+                </form>
+
+                <div id="loading" class="hidden mt-6 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+                    <p class="mt-2 text-gray-600">Analyzing image...</p>
+                </div>
+
+                <div id="result" class="hidden mt-6 text-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Results:</h2>
+                    <p class="mt-2">
+                        Breed: <span id="breedName" class="font-bold text-blue-600"></span>
+                    </p>
+                    <p class="mt-1">
+                        Confidence: <span id="confidence" class="font-bold text-green-600"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
