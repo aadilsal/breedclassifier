@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
 import numpy as np
-from tensorflow.lite.python.interpreter import Interpreter
+from tensorflow.lite import Interpreter
 import tensorflow as tf
 
 
@@ -15,7 +15,8 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Load the TFLite model
-interpreter = tflite.Interpreter(model_path='pet_breed_classifier.tflite')
+interpreter = Interpreter(model_path='pet_breed_classifier.tflite')
+
 interpreter.allocate_tensors()
 
 # Get input and output details
