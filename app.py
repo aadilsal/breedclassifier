@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
 import numpy as np
-import tflite_runtime.interpreter as tflite
+from tensorflow.lite.python.interpreter import Interpreter
 import tensorflow as tf
 
 
